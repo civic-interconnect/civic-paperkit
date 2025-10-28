@@ -1,8 +1,10 @@
 # .github/workflows/deploy-docs.yml
 name: Deploy Docs (on latest push to main branch)
 # It builds and deploys the latest version of the documentation to GitHub Pages.
-# IMPORTANT: Ensure Repo Settings / Pages / Build and deployment / Set Source to `GitHub Actions`.
-
+# IMPORTANT: Ensure Repo Settings / Pages / Build and deployment / Set Source to `Deploy from a branch`,
+# and set Branch = `gh-pages`, Folder = `/`.
+# Note: mike manages dev/ and versioned docs on gh-pages branch.
+#
 # CI PHASES A-B-C-D:
 # - Assemble: Install dependencies, verify environment setup
 # - Baseline: Core validation (types exist, lint passes, tests pass)
@@ -15,9 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # gh-pages deployment
-  pages: write
-  id-token: write
+  contents: write # gh-pages deployment via mike
 
 concurrency:
   group: pages-${{ github.ref }}
@@ -69,18 +69,14 @@ jobs:
       - name: D1) Build docs (mkdocs --strict)
         run: uv run mkdocs build --strict
 
-      - name: D2) Assert site artifact exists
+      - name: D2) Configure git author for gh-pages pushes
         run: |
-          test -d site && test -f site/index.html || {
-            echo "ERROR: MkDocs build produced no site/index.html"
-            exit 1
-          }
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: D3) Upload site as artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: ./site
-
-      - name: D4) Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: D3) Deploy dev channel with mike (keeps other versions)
+        run: |
+          # Publish the dev docs to gh-pages under /dev/
+          # If gh-pages does not exist yet, mike will create it on first push.
+          uv run mike deploy --push --update-aliases dev
+          # Do not set default here; release workflow will set 'latest' as default.
