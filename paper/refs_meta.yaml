@@ -1,0 +1,63 @@
+# paper/refs_meta.yaml
+
+cdc2023_mm_rates:
+  notes: "NCHS Maternal Mortality Rates (2022). Fetch PDF and any linked CSV if available."
+  assets:
+    - url: "https://www.cdc.gov/nchs/data/hestat/maternal-mortality/2022/maternal-mortality-rates-2022.pdf"
+      filename: "cdc_mm_rates_2022.pdf"
+
+cdc2025_mm_rates:
+  notes: "NCHS Maternal Mortality Rates (2023). Direct PDF; check if page lists CSVs."
+  assets:
+    - url: "https://www.cdc.gov/nchs/data/hestat/maternal-mortality/2023/Estat-maternal-mortality.pdf"
+      filename: "cdc_mm_rates_2023.pdf"
+
+childstats2024:
+  notes: "Childstats maternal mortality page; scan for CSV/XLSX links."
+  assets:
+    - page_url: "https://www.childstats.gov/americaschildren/maternal_mortality.asp"
+      allow_ext: [".csv", ".xlsx", ".zip", ".pdf"]
+      href_regex: "(data|table|download|csv|xlsx)"
+      limit: 10
+
+cms2024_maternal_health:
+  notes: "CMS Maternal Health at a Glance PDF (static)."
+  assets:
+    - url: "https://www.medicaid.gov/medicaid/benefits/downloads/2024-maternal-health-at-a-glance.pdf"
+
+marchofdimes2024:
+  notes: "MoD report card page; scrape for downloadable report/data files."
+  assets:
+    - page_url: "https://www.marchofdimes.org/peristats/reports/united-states/report-card"
+      allow_ext: [".pdf", ".csv", ".xlsx"]
+      href_regex: "(report|download|data|csv|xlsx)"
+      limit: 10
+
+gepi2025_mm_bans:
+  notes: "GEPI landing page; scrape for data attachments."
+  assets:
+    - page_url: "https://thegepi.org/maternal-mortality-abortion-bans/"
+      allow_ext: [".pdf", ".csv", ".xlsx", ".zip"]
+      href_regex: "(data|supplement|table|csv|xlsx|zip)"
+      limit: 10
+
+dobbs2022:
+  notes: "Dobbs opinion PDF."
+  assets:
+    - url: "https://www.supremecourt.gov/opinions/21pdf/19-1392_6j37.pdf"
+      filename: "dobbs_2022_scotus.pdf"
+
+cdc_pmdr:
+  notes: "CDC Provisional Maternal Mortality Rates - includes race/ethnicity breakdowns"
+  out_dir: "maternal_mortality"  # organizes into subfolders
+  assets:
+    # Direct CSV download
+    - url: "https://data.cdc.gov/api/views/e2d5-ggg7/rows.csv?accessType=DOWNLOAD&bom=true&format=true"
+      filename: "maternal_mortality_rates.csv"
+      checksum: null  # optional, for verification
+
+    # Also scrape the page for any Excel/PDF supplements
+    - page_url: "https://www.cdc.gov/nchs/nvss/vsrr/provisional-maternal-deaths-rates.htm"
+      allow_ext: [".xlsx", ".pdf", ".csv"]
+      href_regex: "download|data|technical"
+      limit: 5

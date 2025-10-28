@@ -1,0 +1,226 @@
+# pyproject.toml
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=77", "setuptools-scm>=8"]
+
+[project]
+name = "civic-paperkit" # PACKAGE name
+authors = [
+    { name="Civic Interconnect", email="info@civic-interconnect.org" }
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+description = "Toolkit for civic paper production using Python and LaTeX"
+dynamic = ["version"]  # Using setuptools_scm
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "beautifulsoup4",
+  "bibtexparser",
+  "loguru",
+  "pyyaml",
+  "requests",
+]
+
+[project.scripts]
+ci-paperkit = "civic_interconnect.paperkit.cli:main"
+
+[project.urls]
+Documentation = "https://civic-interconnect.github.io/civic-paperkit/"
+Homepage = "https://github.com/civic-interconnect/civic-paperkit"
+Issues = "https://github.com/civic-interconnect/civic-paperkit/issues"
+Source = "https://github.com/civic-interconnect/civic-paperkit"
+
+[project.optional-dependencies]
+dev = [
+  "build",
+  "pre-commit",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
+  "pytest-env",
+  "responses",  # mock requests HTTP
+  "twine",
+  "types-requests",
+  "types-PyYAML",
+  "validate-pyproject",
+]
+docs = [
+  "mike",
+  "mkdocs",                # Core MkDocs
+  "mkdocs-material",       # Modern, responsive theme
+  "mkdocstrings[python]",  # Auto-generate API docs from docstrings
+  "ruff",                  # Needed so mkdocstrings can format signatures
+]
+
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+skips = ["B101"]  # B101: assert statements
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.paths]
+source = [
+  "src/",
+  "*/site-packages/",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "if self.debug:",
+  "if settings.DEBUG",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if 0:",
+  "if __name__ == .__main__.:",
+  "class .*\\bProtocol\\):",
+  "@(abc\\.)?abstractmethod",
+  "# pragma: no cover",
+]
+fail_under = 40
+precision = 1
+show_missing = true
+skip_covered = false
+
+[tool.coverage.run]
+branch = true
+omit = [
+  "*/tests/*",
+  "*/test_*",
+  "*/__pycache__/*",
+]
+source = ["src"]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.deptry]
+known_first_party = ["civic_interconnect"]
+package_module_name_map = {pyyaml = "yaml", beautifulsoup4 = "bs4"}
+[tool.deptry.per_rule_ignores]
+DEP002 = [
+  # Dev dependencies
+  "build",
+  "pre-commit",
+  "pytest",
+  "pytest-asyncio",
+  "pytest-cov",
+  "pytest-env",
+  "responses",  # mock requests HTTP
+  "twine",
+  "types-requests",
+  "types-PyYAML",
+  "validate-pyproject",
+  # Docs dependencies
+  "mike",
+  "mkdocs",
+  "mkdocs-gen-files",
+  "mkdocs-git-revision-date-localized-plugin",
+  "mkdocs-include-markdown-plugin",
+  "mkdocs-literate-nav",
+  "mkdocs-material",
+  "mkdocs-static-i18n",
+  "mkdocstrings",
+  "pdoc",
+  "ruff",
+  # Main dependencies that might not be directly imported
+  "requests",  # If not actually used in code
+]
+
+
+# Ruff formats, lints, and fixes code
+[tool.ruff]
+exclude = [".venv", ".ruff_cache", "build", "dist", "*.egg-info", ".eggs", "__pycache__", "tests"]
+fix = true
+line-length = 100
+preview = false
+target-version = "py312"
+unsafe-fixes = false
+
+[tool.ruff.format]
+line-ending = "lf"
+quote-style = "preserve"
+
+[tool.ruff.lint]
+extend-select = [
+  "F", # Pyflakes rules
+  "W", # PyCodeStyle warnings
+  "E", # PyCodeStyle errors
+  "I", # Sort imports properly
+  "UP", # Newer Python features
+  "C4", # Catch incorrect use of comprehensions, dict, list, etc
+  "C408", # unnecessary comprehension
+  "D", # Docstring conventions
+  "Q", # flake8-quotes
+  "S", # Security issues
+  "C90", # McCabe complexity
+  "N", # Naming conventions
+  "B", # Bugbear
+  "A", # flake8-annotations
+  "PTH", # Use pathlib instead of os.path
+  "RET", # Good return practices
+  "SIM", # flake8-simplify
+  "TID", # flake8-tidy-imports for project conventions
+  "TCH", # flake8-type-checking for type checking imports
+]
+ignore = [
+  "E501", # line length handled by formatter
+  "D203", # 1 blank line before class docstring (conflicts with D211)
+  "D213", # Multi-line docstring summary should start at the second line
+  "D413", # Missing blank line after last section
+  "S101", # assert statements (handled by bandit)
+]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+
+[tool.ruff.lint.per-file-ignores]
+"src/**/__init__.py" = ["D104"]
+"tests/**/*.py" = ["TID251", "TID252", "S101", "D"]
+"notebooks/**/*.ipynb" = ["F821"]
+
+[tool.pyright]
+extraPaths = ["src"]
+include = ["src"]
+pythonVersion = "3.12"
+reportMissingImports = "warning"
+reportPrivateUsage = "none"
+typeCheckingMode = "basic" # or "strict"
+useLibraryCodeForTypes = false # don't open libraries for types (some are on 3.14)
+venv = ".venv"
+venvPath = "."
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = "--cov=src --cov-report=term-missing"
+
+[tool.setuptools]
+include-package-data = true
+license-files = ["LICENSE"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+"civic_lib_core" = ["py.typed", "*.yaml"]
+
+[tool.setuptools.packages.find]
+namespaces = true
+where = ["src"]
+
+[tool.setuptools_scm]
+fallback_version = "0.0.1"
+local_scheme = "no-local-version"
+version_scheme = "guess-next-dev"
