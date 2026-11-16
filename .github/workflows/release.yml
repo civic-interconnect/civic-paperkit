@@ -67,7 +67,7 @@ jobs:
         run: ls -lah dist
 
       - name: D4) Create GitHub Release and upload artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}   # e.g., vx.y.z
           name: ${{ github.ref_name }}
